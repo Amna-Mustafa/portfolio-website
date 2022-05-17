@@ -18,8 +18,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
-        notNull: {
-          msg: 'Please enter your name'
+        customValidator(value) {
+          if (value === "" ) {
+            throw new Error("Please enter your name");
+          }
         }
       }
     },
@@ -36,14 +38,21 @@ module.exports = (sequelize, DataTypes) => {
     },
     description: {
       type: DataTypes.TEXT,
-      required: [true, "Please enter description"],
+      allowNull: false,
+      validate: {
+        customValidator(value) {
+          if (value === "" ) {
+            throw new Error("Please enter description");
+          }
+        }
+      }
     },
     rating: {
       type: DataTypes.INTEGER,
       required: [true, "Please enter rating"],
       validate: {
         isInt: {
-          msg: "Must be an integer"
+          msg: "Please enter rating, must be an integer"
         }
       }
     }

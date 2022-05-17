@@ -19,11 +19,25 @@ module.exports = (sequelize, DataTypes) => {
   ProjectCategory.init({
     title: {
       type: DataTypes.STRING,
-      allowNull: false
-    }
+      allowNull: false,
+      validate: {
+        customValidator(value) {
+          if (value === "" ) {
+            throw new Error("Please enter category title");
+          }
+        }
+      }
+    },
   }, {
     sequelize,
     modelName: 'ProjectCategory',
+    hooks: {
+      afterDestroy: (category, options) => {
+        console.log("deleted:");
+        console.log('categoryid',category.id);
+        console.log(category.title);
+      },
+    },
   });
   return ProjectCategory;
 };

@@ -5,7 +5,9 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+var userRouter = require('./routes/admin/user');
+var testRouter = require('./routes/admin/testimonial');
+var projectRouter = require('./routes/admin/project');
 var authRouter = require('./routes/admin/auth');
 const validationHandler = require('./middleware/validationHandler');
 var app = express();
@@ -22,8 +24,18 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 //using user route
-app.use(usersRouter);
+app.use(userRouter);
+app.use(testRouter);
+app.use(projectRouter);
 app.use(authRouter);
+
+const multer  = require('multer')
+const upload = multer({ dest: './public/images/projects/' })
+app.post('/stats', upload.single('uploaded_file'), function (req, res) {
+   // req.file is the name of your file in the form above, here 'uploaded_file'
+   // req.body will hold the text fields, if there were any 
+   console.log(req.file, req.body)
+});
 
 //setup server to listen on port 8080
 app.listen(process.env.PORT || 8080, () => {

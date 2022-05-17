@@ -19,20 +19,36 @@ module.exports = (sequelize, DataTypes) => {
   Project.init({
     category_id: {
       type: DataTypes.INTEGER,
-      onDelete: 'cascade',
-      references: {
-        model: 'Category',
-        key: 'id',
-        as: 'category_id'
+      allowNull: false,
+      validate: {
+        customValidator(value) {
+          if (value === "" ) {
+            throw new Error("Please enter category id");
+          }
+        }
       }
     },
     title: {
       type: DataTypes.STRING,
       allowNull: false,
+      validate: {
+        customValidator(value) {
+          if (value === "" ) {
+            throw new Error("Please enter project title");
+          }
+        }
+      }
     },
     description: {
       type: DataTypes.TEXT,
       allowNull: false,
+      validate: {
+        customValidator(value) {
+          if (value === "" ) {
+            throw new Error("Please enter project description");
+          }
+        }
+      }
     },
     image: {
       type: DataTypes.STRING,
@@ -40,8 +56,12 @@ module.exports = (sequelize, DataTypes) => {
     },
     url: {
       type: DataTypes.STRING,
-      allowNull: true,
-      isUrl: true,
+      allowNull: false,
+      validate: {
+        isUrl: {
+          msg: "Please enter url, must be a url"
+        }
+      }
     }
   }, {
     sequelize,

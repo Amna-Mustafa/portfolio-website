@@ -2,6 +2,7 @@
 const {
   Model
 } = require('sequelize');
+const bcrypt = require("bcrypt");
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     /**
@@ -46,23 +47,23 @@ module.exports = (sequelize, DataTypes) => {
       unique: [true, "email already exists in database!"],
       lowercase: true,
       trim: true,
+      noUpdate : true,
       required: [true, "email not provided"],
       validate: {
-        validator: function (v) {
-          return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
-        },
-        message: '{VALUE} is not a valid email!'
+        isEmail: {
+          msg: 'Please enter a valid email'
+        }
       }
     },
     password: {
       type: DataTypes.STRING,
       allowNull: false,
       set(value) {
-        this.setDataValue('password', hash(value));
+        this.setDataValue('password', bcrypt.hashSync(value, 10));
       },
       validate: {
         notEmpty: true,
-        len: [8, 12],
+        len: [8],
         notNull: {
           msg: 'Please enter your password'
         }
