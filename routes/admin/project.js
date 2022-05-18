@@ -7,7 +7,7 @@ const projectController = require("../../controllers/admin/project");
 const path = require("path");
 const multer  = require('multer')
 const storage = multer.diskStorage({
-  destination: './upload/projects/images',
+  destination: './upload/projects',
   filename: (req, file, cb) => {
       return cb(null, `${file.fieldname}_${Date.now()}${path.extname(file.originalname)}`)
   }

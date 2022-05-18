@@ -9,7 +9,7 @@ const path = require("path");
 const multer  = require('multer')
 
 const storage = multer.diskStorage({
-  destination: './upload/users/images',
+  destination: './upload/users',
   filename: (req, file, cb) => {
       return cb(null, `${file.fieldname}_${Date.now()}${path.extname(file.originalname)}`)
   }
@@ -20,8 +20,9 @@ const upload = multer({
 })
 
 //// user 
+router.get('/user', userController.list);
 router.post("/user", upload.single('image'), userController.add);
-router.put("/user/:id", userController.update)
+router.put("/user/:id", upload.single('image'), userController.update)
 router.delete('/user/:id', userController.delete);
 
 //// user social links

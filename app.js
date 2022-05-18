@@ -11,6 +11,8 @@ var projectRouter = require('./routes/admin/project');
 var authRouter = require('./routes/admin/auth');
 const validationHandler = require('./middleware/validationHandler');
 var app = express();
+const ProjectCategory = require('./models/index').ProjectCategory;
+const Project = require('./models/index').Project;
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -29,13 +31,7 @@ app.use(testRouter);
 app.use(projectRouter);
 app.use(authRouter);
 
-const multer  = require('multer')
-const upload = multer({ dest: './public/images/projects/' })
-app.post('/stats', upload.single('uploaded_file'), function (req, res) {
-   // req.file is the name of your file in the form above, here 'uploaded_file'
-   // req.body will hold the text fields, if there were any 
-   console.log(req.file, req.body)
-});
+
 
 //setup server to listen on port 8080
 app.listen(process.env.PORT || 8080, () => {
@@ -57,6 +53,11 @@ app.listen(process.env.PORT || 8080, () => {
 //   res.status(err.status || 500);
 //   res.render('error');
 // });
+
+ProjectCategory.afterDestroy( async (ProjectCategory, options) => {
+  await Project.destroy({ where: { category_id : ProjectCategory.id }, force: true })
+})
+
 
 app.use(validationHandler);
 

@@ -1,44 +1,64 @@
 const Project = require('../../models').Project;
 const { successResponse, errorResponse } = require("../../helpers/response");
+const fs = require('fs');
+const path = require('path');
+const { dirname } = require('path');
 
 module.exports = {
   async add(req, res, next) {
+    // console.log(req.file);
     //   console.log({...req.file}.filename);
     //   return '';
     try {
-        if(req.file){
-            const project = await Project
-            .create({
+      if (req.file) {
+        const project = await Project
+          .create({
             category_id: req.body.category_id,
             title: req.body.title,
             description: req.body.description,
-            image: {...req.file}.filename,
+            image: { ...req.file }.path,
             url: req.body.url
-            });
-            return successResponse(req, res, "Project added successfully", project);
-        }else{
-            return errorResponse(req, res, "Please attach project image", 400);
-        }
-      
+          });
+        return successResponse(req, res, "Project added successfully", project);
+      } else {
+        return errorResponse(req, res, "Please attach project image", 400);
+      }
+
     } catch (error) {
       next(error);
     }
   },
 
   async update(req, res, next) {
-    try {
-      const { id } = req.params;
-      console.log(id);
-      const [updated] = await Project.update(req.body, {
-        where: { id },
+    const { id } = req.params;
+    try {  
+      const project = await Project.findOne({ where: { id } });
+      const oldImage = project.image;
+      project.set({
+        category_id: req.body.category_id,
+        title: req.body.title,
+        description: req.body.description,
+        image: { ...req.file }.path,
+        url: req.body.url
       });
-      //return res.send(updated);
-      if (updated) {
-        const updatedProject = await Project.findOne({ where: { id } });
-        // console.log(updatedProject);
-        return successResponse(req, res, "Project has been updated", updatedProject);
+      await project.save();
+
+      if(req.file) {
+        fs.unlink(path.join(dirname(require.main.filename), oldImage), error => {
+          if(error) {
+            throw error;
+          }
+          return res.status(200).json({
+            message: 'Project has been updated successfulluy',
+            data: project
+          });
+        });
+      } else{
+          return res.status(200).json({
+            message: 'Project has been updated successfulluy',
+            data: project
+          });
       }
-      return errorResponse(req, res, "No, project found to update", 400);
     } catch (error) {
       next(error);
     }

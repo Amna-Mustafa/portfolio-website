@@ -2,6 +2,8 @@
 const {
   Model
 } = require('sequelize');
+
+// console.log(Project);
 module.exports = (sequelize, DataTypes) => {
   class ProjectCategory extends Model {
     /**
@@ -31,13 +33,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'ProjectCategory',
-    hooks: {
-      afterDestroy: (category, options) => {
-        console.log("deleted:");
-        console.log('categoryid',category.id);
-        console.log(category.title);
-      },
-    },
+   
   });
   return ProjectCategory;
 };
